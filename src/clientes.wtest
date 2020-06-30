@@ -1,6 +1,45 @@
+import clientes.*
+import vendedores.*
+import geografia.*
 
-test "testX" {
+describe "clientes"{	
+	const clienteInseguro1 = new ClienteInseguro()
+	const clienteDetallista1 = new ClienteDetallista()
+	const clienteHumanista1 = new ClienteHumanista()
+	//provincias
+	const buenosAires = new Provincia(poblacion=16000000)
+	const santaFe = new Provincia(poblacion=3300000)
+	const entreRios = new Provincia(poblacion=1300000)
+	//ciudades
+	const lobos = new Ciudad(provincia=buenosAires)
+	const zarate = new Ciudad(provincia=buenosAires)
+	const diamante = new Ciudad(provincia=entreRios)
+	//certificados de otro tipo
+	const cert1 = new Certificacion(deProducto=false,puntos=10)
+	const cert2 = new Certificacion(deProducto=false,puntos=8)
+	//certificados de productos
+	const cert5 = new Certificacion(deProducto=true,puntos=10)
+	const cert6 = new Certificacion(deProducto=true,puntos=7)
+	const cert7 = new Certificacion(deProducto=true,puntos=4)
+	const cert8 = new Certificacion(deProducto=true,puntos=2)
+	const cert9 = new Certificacion(deProducto=true,puntos=25)
 
-	assert.that(true)
-
+	const vendedorFijo1 = new VendedorFijo(certificaciones=[cert1,cert5],ciudadDondeVive=lobos)
+	const vendedorFijo2 = new VendedorFijo(certificaciones=[cert1,cert2,cert5,cert6],ciudadDondeVive=zarate)
+	const vendedorFijo3 = new VendedorFijo(certificaciones=[cert1,cert9],ciudadDondeVive=diamante)
+	
+	const vendedorViajante2 = new VendedorViajante(provinciasHabilitadas=[santaFe,entreRios],certificaciones=[cert8,cert7,cert1,cert9])
+	
+	const comercioCorresponsal1 = new ComercioCorresponsal()
+		
+	test"clientes atendidos"{
+		assert.that(clienteInseguro1.PuedeSerAtendido(vendedorFijo2))
+		assert.notThat(clienteInseguro1.PuedeSerAtendido(vendedorFijo1))
+		
+		assert.notThat(clienteDetallista1.PuedeSerAtendido(vendedorFijo1))
+		assert.that(clienteDetallista1.PuedeSerAtendido(vendedorViajante2))
+		
+		assert.that(clienteHumanista1.PuedeSerAtendido(vendedorFijo3))
+		assert.notThat(clienteHumanista1.PuedeSerAtendido(comercioCorresponsal1))
+	}
 }

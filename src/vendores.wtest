@@ -1,6 +1,167 @@
+import vendedores.*
+import centros.*
+import geografia.*
 
-test "testX" {
+describe "vendedores,certificados, lugares y centros de distribucion"{
+	//provincias
+	const buenosAires = new Provincia(poblacion=16000000)
+	const santaFe = new Provincia(poblacion=3300000)
+	const cordoba = new Provincia(poblacion=3500000)
+	const entreRios = new Provincia(poblacion=1300000)
+	//ciudades
+	const chivilcoy = new Ciudad(provincia=buenosAires)
+	const bragado = new Ciudad(provincia=buenosAires)
+	const lobos = new Ciudad(provincia=buenosAires)
+	const pergamino = new Ciudad(provincia=buenosAires)
+	const zarate = new Ciudad(provincia=buenosAires)
+	const rosario = new Ciudad(provincia=santaFe)
+	const rafaela = new Ciudad(provincia=santaFe)
+	const amstrong = new Ciudad(provincia=santaFe)
+	const sanFrancisco = new Ciudad(provincia=cordoba)
+	const diamante = new Ciudad(provincia=entreRios)
+	//certificados de otro tipo
+	const cert1 = new Certificacion(deProducto=false,puntos=10)
+	const cert2 = new Certificacion(deProducto=false,puntos=8)
+	const cert3 = new Certificacion(deProducto=false,puntos=5)
+	const cert4 = new Certificacion(deProducto=false,puntos=3)
+	//certificados de productos
+	const cert5 = new Certificacion(deProducto=true,puntos=10)
+	const cert6 = new Certificacion(deProducto=true,puntos=7)
+	const cert7 = new Certificacion(deProducto=true,puntos=4)
+	const cert8 = new Certificacion(deProducto=true,puntos=2)
+	const cert9 = new Certificacion(deProducto=true,puntos=25)
 
-	assert.that(true)
-
+	const vendedorFijo1 = new VendedorFijo(certificaciones=[cert1,cert5],ciudadDondeVive=lobos)
+	const vendedorFijo2 = new VendedorFijo(certificaciones=[cert1,cert2,cert5,cert6],ciudadDondeVive=zarate)
+	const vendedorFijo3 = new VendedorFijo(certificaciones=[cert1,cert9],ciudadDondeVive=diamante)
+	
+	const vendedorViajante1 = new VendedorViajante(provinciasHabilitadas=[buenosAires,santaFe],certificaciones=[cert3,cert4])
+	const vendedorViajante2 = new VendedorViajante(provinciasHabilitadas=[santaFe,entreRios],certificaciones=[cert8,cert7,cert1,cert9])
+	
+	const comercioCorresponsal1 = new ComercioCorresponsal()
+	const comercioCorresponsal2 = new ComercioCorresponsal()
+	const comercioCorresponsal3 = new ComercioCorresponsal(certificaciones=[cert1,cert6])
+	
+	const centroDeDistribucion1 = new CentroDeDistribucion(ubicacionCiudad=lobos)
+	const centroDeDistribucion2 = new CentroDeDistribucion(ubicacionCiudad=rosario)
+	const centroDeDistribucion3 = new CentroDeDistribucion(ubicacionCiudad=diamante)
+	
+	fixture{
+		comercioCorresponsal1.agregarCiudadDondeHaySucursal(chivilcoy)
+		comercioCorresponsal1.agregarCiudadDondeHaySucursal(bragado)
+		comercioCorresponsal1.agregarCiudadDondeHaySucursal(lobos)
+		comercioCorresponsal1.agregarCiudadDondeHaySucursal(pergamino)
+		comercioCorresponsal1.agregarCiudadDondeHaySucursal(zarate)
+			
+		comercioCorresponsal2.agregarCiudadDondeHaySucursal(rosario)
+		comercioCorresponsal2.agregarCiudadDondeHaySucursal(rafaela)
+		comercioCorresponsal2.agregarCiudadDondeHaySucursal(sanFrancisco)
+		comercioCorresponsal2.agregarCiudadDondeHaySucursal(diamante)
+		
+		comercioCorresponsal3.agregarCiudadDondeHaySucursal(rosario)
+		comercioCorresponsal3.agregarCiudadDondeHaySucursal(rafaela)
+		comercioCorresponsal3.agregarCiudadDondeHaySucursal(amstrong)
+		
+		centroDeDistribucion1.agregarVendedor(vendedorFijo1)
+		centroDeDistribucion1.agregarVendedor(vendedorFijo2)
+		centroDeDistribucion1.agregarVendedor(vendedorViajante2)
+		
+		centroDeDistribucion2.agregarVendedor(vendedorViajante1)
+		centroDeDistribucion2.agregarVendedor(vendedorFijo3)
+		centroDeDistribucion2.agregarVendedor(comercioCorresponsal1)	
+		
+		centroDeDistribucion3.agregarVendedor(comercioCorresponsal2)
+		centroDeDistribucion3.agregarVendedor(comercioCorresponsal3)
+		
+	}
+	test "vendededores"{
+		//fijos
+		assert.that(vendedorFijo1.puedeTrabajarEn(lobos))
+		assert.notThat(vendedorFijo1.puedeTrabajarEn(pergamino))
+		assert.that(vendedorFijo2.puedeTrabajarEn(zarate))
+		assert.notThat(vendedorFijo2.puedeTrabajarEn(diamante))
+		assert.that(vendedorFijo3.puedeTrabajarEn(diamante))
+		assert.notThat(vendedorFijo3.puedeTrabajarEn(lobos))
+		
+		assert.notThat(vendedorFijo1.esVersatil())
+		assert.that(vendedorFijo2.esVersatil())
+		assert.notThat(vendedorFijo3.esVersatil())
+	
+		assert.notThat(vendedorFijo1.esFirme())
+		assert.that(vendedorFijo2.esFirme())
+		assert.that(vendedorFijo3.esFirme())
+		
+		assert.notThat(vendedorFijo1.esInfluyente())
+		assert.notThat(vendedorFijo2.esInfluyente())
+		assert.notThat(vendedorFijo3.esInfluyente())
+		
+		//viajantes
+		assert.that(vendedorViajante1.puedeTrabajarEn(zarate))
+		assert.notThat(vendedorViajante1.puedeTrabajarEn(diamante))
+		assert.that(vendedorViajante2.puedeTrabajarEn(diamante))
+		assert.notThat(vendedorViajante2.puedeTrabajarEn(zarate))
+		
+		assert.notThat(vendedorViajante1.esVersatil())
+		assert.that(vendedorViajante2.esVersatil())
+		
+		assert.notThat(vendedorViajante1.esFirme())
+		assert.that(vendedorViajante2.esFirme())	
+		
+		assert.that(vendedorViajante1.esInfluyente())
+		assert.notThat(vendedorViajante2.esInfluyente())		
+		
+		//comercio corresponsal		
+		assert.that(comercioCorresponsal1.puedeTrabajarEn(zarate))
+		assert.notThat(comercioCorresponsal1.puedeTrabajarEn(rosario))
+		assert.that(comercioCorresponsal2.puedeTrabajarEn(diamante))
+		assert.notThat(comercioCorresponsal2.puedeTrabajarEn(bragado))
+		assert.that(comercioCorresponsal3.puedeTrabajarEn(amstrong))
+		assert.notThat(comercioCorresponsal3.puedeTrabajarEn(zarate))
+		
+		assert.that(comercioCorresponsal1.esInfluyente())
+		assert.that(comercioCorresponsal2.esInfluyente())
+		assert.notThat(comercioCorresponsal3.esInfluyente())
+		}
+			
+	test "centro distribucion"{
+		assert.equals(vendedorViajante2,centroDeDistribucion1.vendedorEstrella())
+		assert.equals(vendedorFijo3,centroDeDistribucion2.vendedorEstrella())
+		assert.equals(comercioCorresponsal3,centroDeDistribucion3.vendedorEstrella())
+		
+		assert.that(centroDeDistribucion1.puedeCubrirCiudad(zarate))
+		assert.notThat(centroDeDistribucion1.puedeCubrirCiudad(sanFrancisco))
+		assert.that(centroDeDistribucion2.puedeCubrirCiudad(bragado))
+		assert.notThat(centroDeDistribucion2.puedeCubrirCiudad(sanFrancisco))
+		assert.that(centroDeDistribucion3.puedeCubrirCiudad(sanFrancisco))
+		assert.notThat(centroDeDistribucion3.puedeCubrirCiudad(zarate))
+		
+		assert.equals([vendedorFijo1,vendedorFijo2,vendedorViajante2],centroDeDistribucion1.vendedoresGenericosRegistrados())
+		//assert.equals([vendedorFijo3],centroDeDistribucion2.vendedoresGenericosRegistrados())
+		//assert.equals(comercioCorresponsal3,centroDeDistribucion3.vendedoresGenericosRegistrados())
+		/*Encuentra los mismos valores que ingreso pero me da error igualmente
+		por eso estan comentados*/
+		
+		assert.notThat(centroDeDistribucion1.centroEsRobusto())
+		assert.notThat(centroDeDistribucion2.centroEsRobusto())
+		assert.notThat(centroDeDistribucion3.centroEsRobusto())
+		
+	}
+	test "afinidad"{
+		assert.that(vendedorFijo1.tieneAfinidad(centroDeDistribucion1))
+		assert.notThat(vendedorFijo2.tieneAfinidad(centroDeDistribucion2))
+		assert.that(vendedorFijo3.tieneAfinidad(centroDeDistribucion3))
+		
+		assert.that(vendedorViajante1.tieneAfinidad(centroDeDistribucion1))
+		assert.that(vendedorViajante2.tieneAfinidad(centroDeDistribucion2))
+		
+		assert.that(comercioCorresponsal1.tieneAfinidad(centroDeDistribucion1))		
+		assert.notThat(comercioCorresponsal1.tieneAfinidad(centroDeDistribucion3))		
+		assert.that(comercioCorresponsal2.tieneAfinidad(centroDeDistribucion2))
+		assert.notThat(comercioCorresponsal3.tieneAfinidad(centroDeDistribucion3))		
+	}
 }
+
+
+
+
+

@@ -64,6 +64,9 @@ class VendedorViajante inherits Vendedor{
 class ComercioCorresponsal inherits Vendedor{
 	var property ciudadadesDondeHaySucursales = []
 	
+	method agregarCiudadDondeHaySucursal(ciudad){
+		ciudadadesDondeHaySucursales.add(ciudad)
+	}
 	override method puedeTrabajarEn(ciudad){
 		return ciudadadesDondeHaySucursales.contains(ciudad)
 	}
@@ -74,7 +77,7 @@ class ComercioCorresponsal inherits Vendedor{
 		return ciudadadesDondeHaySucursales.map({ciudad=> ciudad.provincia()}).asSet().size()
 	}
 	override method esInfluyente(){
-		return self.cantidadCiudadesConSucursales() > 5 or
+		return self.cantidadCiudadesConSucursales() >= 5 or
 			self.cantidadProvinciasConSucursales() >= 3
 	}
 	override method tieneAfinidad(centro){
